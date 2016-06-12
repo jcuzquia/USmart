@@ -1,0 +1,80 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# An example controller showing a sample home page
+GET     /                           controllers.HomeController.index
+
+# About
+GET		/about						controllers.HomeController.about
+
+# Contact
+GET		/contact					controllers.HomeController.contact
+
+# Profile
+GET		/profile					controllers.HomeController.profile
+
+# Dashboard
+GET 	/dashboard					controllers.HomeController.dashboard
+
+# Project
+GET		/dashboard/addProject				controllers.ProjectController.addProject
+POST	/dashboard/saveProject		controllers.ProjectController.saveProject	
+GET		/projectInfo/:id/:meterId	controllers.ProjectController.showProject(id: Long, meterId : Long)
+DELETE	/project/:id					controllers.ProjectController.deleteProject(id: Long)
+
+# Meter
+GET		/project/meter/:meterId				controllers.ProjectController.showMeterPage(meterId: Long)
+GET		/project/addMeter				controllers.ProjectController.addMeter(projectId: Long)
+POST	/project/uploadMeter/:mode		controllers.ProjectController.getMeterData(mode: String, projectId: Long)
+DELETE	/project/deleteMeter/:id		controllers.ProjectController.deleteMeter(id: Long)
+GET		/project/timeSeries/:meterId	controllers.TimeSeriesController.showTimeSeriesPage(meterId: Long)
+GET		/project/timeSeriesData/:meterId	controllers.TimeSeriesController.getTimeSeriesJson(meterId: String)
+POST	/project/activateDayType/:dayType	controllers.TimeSeriesController.activateDayType(dayType: String, meterId: String)
+
+# Login
+GET 	/login						controllers.HomeController.login
+POST	/login						controllers.HomeController.doLogin
+
+GET     /logout                     com.feth.play.module.pa.controllers.Authenticate.logout
+GET     /authenticate/:provider     com.feth.play.module.pa.controllers.Authenticate.authenticate(provider: String)
+
+# Signup
+GET		/signup						controllers.HomeController.signup
+POST	/signup						controllers.HomeController.doSignup
+
+GET     /accounts/unverified        controllers.Signup.unverified
+GET     /authenticate/:provider/denied     controllers.Signup.oAuthDenied(provider: String)
+
+GET     /accounts/verify/:token     controllers.Signup.verify(token: String)
+GET     /accounts/exists            controllers.Signup.exists
+
+GET     /accounts/password/reset/:token     controllers.Signup.resetPassword(token: String)
+POST    /accounts/password/reset            controllers.Signup.doResetPassword
+
+GET    /accounts/password/change    controllers.Account.changePassword
+POST   /accounts/password/change    controllers.Account.doChangePassword
+
+GET     /accounts/verify            controllers.Account.verifyEmail
+
+GET     /accounts/add               controllers.Account.link
+
+GET     /accounts/link              controllers.Account.askLink
+POST    /accounts/link              controllers.Account.doLink
+
+GET     /accounts/merge             controllers.Account.askMerge
+POST    /accounts/merge             controllers.Account.doMerge
+
+GET     /login/password/forgot     controllers.Signup.forgotPassword(email: String ?= "")
+POST    /login/password/forgot     controllers.Signup.doForgotPassword
+
+
+# An example controller showing how to use dependency injection
+GET     /count                      controllers.CountController.count
+# An example controller showing how to write asynchronous code
+GET     /message                    controllers.AsyncController.message
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET		/webjars/*file				controllers.WebJarAssets.at(file)
+GET		/assets/*file				controllers.Assets.at(path="/public", file)

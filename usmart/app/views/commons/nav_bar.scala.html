@@ -1,0 +1,149 @@
+@(nav: String, userProvider : services.UserProvider)
+@import be.objectify.deadbolt.java.views.html._
+@import be.objectify.deadbolt.java.utils.TemplateUtils._
+@import helper._
+@import views.html.commons._
+
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-8") }
+@shortFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-4") }
+
+
+<div class="navbar navbar-inverse">
+	<div class="container">
+		<div class="navbar-header">
+			<a href="@routes.HomeController.index()" class="navbar-brand">Newnergy</a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false" aria-controls="navbar">
+            	<span class="sr-only">Toggle navigation</span>
+            	<span class="icon-bar"></span>
+            	<span class="icon-bar"></span>
+            	<span class="icon-bar"></span>
+          	</button>
+		</div>
+		@*Un-ordered list portion*@
+		<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li class="@("active".when(nav == "home"))"><a href="@routes.HomeController.index()">Home</a></li>
+            	<li class="@("active".when(nav == "about"))"><a href="@routes.HomeController.about()">About</a></li>
+            	<li class="@("active".when(nav == "contact"))"><a href="@routes.HomeController.contact()">Contact</a></li>
+				
+				@*This handles the form*@
+				@*Show form if the subject is not present*@
+				@subjectNotPresent() {
+				<div class="navbar-header container-fluid collapsed">
+					<form class="navbar-form navbar-right" action="@routes.HomeController.doLogin()">
+						<div class="form-group col-md-4 col-sm-4">
+							<input type="text" placeholder="Email" class="form-control">
+						</div>
+						<div class="form-group col-md-4 col-sm-4">
+		              		<input type="password" placeholder="Password" class="form-control">
+		            	</div>
+		            	<div class="form-group col-md-2 col-sm-2">
+		            		<button type="submit" class="btn btn-success">Login</button>
+		            	</div>
+		            	<div class="form-group col-md-1 col-sm-1">
+		            		<button type="button" 
+			         			onclick="window.location='@routes.HomeController.signup()';"
+			          			value="Signup"
+			          			class="btn btn-primary">Sign up!
+		          		</button>
+		            	</div>
+					</form>
+				</div>
+				}
+				
+				 @subjectPresent() {
+                        <ul class="nav navbar-nav navbar-right">
+                        @defining(userProvider.getUser(session())) { user =>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> @user.name <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li class="@("active".when(nav == "profile"))"><a href="@routes.HomeController.profile()">@Messages("playauthenticate.navigation.profile")</a></li>
+                                    <li><a href="@routes.HomeController.dashboard()">Dashboard</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="@com.feth.play.module.pa.controllers.routes.Authenticate.logout()"><i class="icon-off"></i> @Messages("playauthenticate.navigation.logout")</a></li>
+                                </ul>
+                            </li>
+                        }
+                        </ul>
+                    } 
+			</ul>
+			
+			
+		</div>
+	</div>
+</div>
+
+
+
+
+
+@*
+     
+<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          
+          <a class="navbar-brand" href="@routes.Application.index()">Newnergy</a>
+        
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        
+        <div class="collapse navbar-collapse">
+        
+        </div>
+        <!--  -->
+          <ul class="cnav navbar-nav">
+            <li class="@("active".when(nav == "home"))"><a href="@routes.Application.index()">Home</a></li>
+            <li class="@("active".when(nav == "about"))"><a href="@routes.Application.about()">About</a></li>
+            <li class="@("active".when(nav == "contact"))"><a href="@routes.Application.contact()">Contact</a></li>
+          
+            Show form when user is not present
+        @subjectNotPresent() {
+        <div class="navbar-header container-fluid collapsed">
+        <form class="navbar-form navbar-right">
+        	<div class="form-group">
+              <input type="text" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Login</button>
+            <button type="button" 
+         		onclick="window.location='@routes.Application.signup()';"
+          		value="Signup"
+          		class="btn btn-primary">Sign up!
+          	</button>
+        </form>
+        </div>
+        }
+        </ul>
+      
+         
+
+	 @subjectPresent() {
+                        <ul class="nav navbar-nav navbar-right">
+                        @defining(Application.getLocalUser(session())) { user =>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> @user.name <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li class="@("active".when(nav == "profile"))"><a href="@routes.Application.profile()">@Messages("playauthenticate.navigation.profile")</a></li>
+                                    <li><a href="@routes.Application.dashboard("")">Dashboard</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="@com.feth.play.module.pa.controllers.routes.AuthenticateDI.logout()"><i class="icon-off"></i> @Messages("playauthenticate.navigation.logout")</a></li>
+                                </ul>
+                            </li>
+                        }
+                        </ul>
+                    } 
+	 
+	</div>
+		
+</nav>
+
+*@

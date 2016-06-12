@@ -1,0 +1,48 @@
+@(projectsList: List[models.Project])
+
+<h1 class="page-header">My Projects</h1>
+@if(projectsList.isEmpty) {
+	<h2>You don't have any projects yet</h2>
+	<button class="btn btn-primary" onclick="window.location='@routes.ProjectController.addProject()';">Create Project</button>
+} else{
+<div class="panel panel-default">
+	<table class="table table-striped table-bordered">
+		<thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+		<tbody>
+			@for(project <- projectsList){
+				<tr>
+					<td><a href="@routes.ProjectController.showProject(project.id, 0)">@project.title</a></td>
+					<td>@project.description</td>
+					<td>
+						<button type="button" class="btn-info"
+							onclick="" value="edit">
+							Edit
+						</button>
+						<button type="button" class="btn-danger" 
+							onclick="deleteProject('@routes.ProjectController.deleteProject(project.id)');"
+							value="delete">
+							Delete
+						</button>
+					</td>
+					
+				</tr>
+			}
+				
+		</tbody>
+		
+	</table>
+	
+</div>
+<div class="form-group">
+	<div class="col-md-4">
+          <button class="btn btn-primary" onclick="window.location='@routes.ProjectController.addProject()';">Create Project</button>
+    </div>
+</div>
+
+}

@@ -1,0 +1,10 @@
+@(f: Form[_], constraints: Boolean = false)
+
+@import helper._
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-8") }
+
+@inputText(
+  f("email"),
+  '_showConstraints -> constraints,
+  '_label -> Messages("playauthenticate.login.email.placeholder")
+)

@@ -1,0 +1,48 @@
+@(playAuth: com.feth.play.module.pa.PlayAuthenticate, userProvider: services.UserProvider, loginForm: Form[_])
+
+@import helper._
+@import views.html.commons._
+@import views.html.account._
+
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-8") }
+@shortFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-4") }
+
+@main(userProvider,Messages("playauthenticate.login.title"),"login") {
+
+	<div class="container">
+  <div class="page-header">
+		<h1>Account Information</h1>
+  </div>
+
+  <fieldset>
+  	<legend>User Information</legend>
+	@b3.form(action = routes.HomeController.doLogin()) {
+      
+      @b3.text(loginForm("email"),
+        '_label -> "Email",
+        'maxlength -> 50,
+        'placeholder -> "Email",
+        'value -> "jcuzquia@gmail.com"
+        )
+        
+        @b3.password(loginForm("password"), 
+        	'_label -> "Password",
+        	'placeholder -> "Password")
+        
+        
+       <div class="form-group">
+        <div class="col-md-4">
+          <input type="submit" class="btn btn-success" value="Login"/>
+          <button type="button" class="btn btn-warning"
+                   value="cancel">Cancel</button>
+        </div>
+      </div>
+	}
+  </fieldset>
+  <div class="col-xs-6 col-md-4">
+  	@*Display list of available providers
+  	@_providerPartial(skipCurrent=false)*@
+  </div>
+  
+  </div>
+}

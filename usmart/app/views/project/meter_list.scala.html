@@ -1,0 +1,75 @@
+@(project: models.Project)
+@import views.html.helper._
+
+@if(project.meters.isEmpty()){
+<div class="panel panel-default">
+<table class="table table-striped table-bordered">
+	<thead>
+        <tr>
+			<th>Meter#</th>
+			<th>Description</th>
+			<th class="col-right">Action</th>
+       	</tr>
+    </thead>
+	<tbody>
+	</tbody>
+</table>
+</div>
+<h2>No meters were found for this project</h2>
+	
+} else {
+<table class="table table-striped table-bordered">
+	<thead>
+       	<tr>
+       		<th>Code</th>
+			<th>Check</th>
+			<th>Description</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th class="col-right">Action</th>
+   		</tr>
+    </thead>
+	<tbody>
+			
+	@for(meter <- project.meters){
+		<tr>
+			<td id="code-@meter.id">@meter.id</td>
+			<td>
+				<button class="btn-success meter-button" id="meter-button-@meter.id" type="button"
+							onclick="window.location = '@routes.ProjectController.showMeterPage(meter.id)';">
+							 Check Meter @meter.id
+				</button>
+			</td>
+			<td>@meter.description</td>
+			<th id="startDate-@meter.id">@meter.startDate.format("dd-MM-yyyy")</th>
+			<th id="endDate-@meter.id">@meter.endDate.format("dd-MM-yyyy")</th>
+			<td class="col-right">
+				<button class="btn-danger" type="button"
+					onclick="deleteMeter('@routes.ProjectController.deleteMeter(meter.id)');"
+					value="delete">
+					Delete
+				</button>
+				<button class="btn-info" type="button"
+					onclick=""
+					value="edit">
+					Edit
+				</button>
+			</td>
+		</tr>
+			}
+			</tbody>
+		</table>
+		}
+
+<div class="btn-group">
+	<button type="button" class="btn btn-primary"
+		onclick="window.location='@routes.ProjectController.addMeter(project.id)';">
+	Add Meter
+	</button>
+	
+	<button type="button" class="btn btn-default"
+		onclick="window.location='@routes.HomeController.dashboard()';">
+		Dashboard
+	</button>
+</div>
+</div>

@@ -1,0 +1,30 @@
+@(userProvider: services.UserProvider)(nav: String)(my_projects : => Html)
+@import views.html.commons._
+
+@main(userProvider, nav) {
+<div class="container">
+	<div class="row">
+		<div class="col-sm-3 col-md-2 sidebar">
+		<h2>My Dashboard</h2>
+			<ul class="nav nav-pills nav-stacked">
+				<li class="active"><a data-toggle="pill" href="#my-projects">My Projects</a></li>
+				<li role="presentation"><a data-toggle="pill" href="#my-meter">My Meter</a></li>
+				<li role="presentation"><a data-toggle="pill" href="#other">Other</a></li>
+				<li role="presentation"><a href="#">Messages</a></li>
+			</ul>
+		</div>
+		 <div class="col-sm-12 col-sm-offset-2 col-md-12 main col-md-offset-0">
+		 	<div class="tab-content">
+		 		<div class="tab-pane fade in active" id="my-projects">
+			 		@my_projects
+			 	</div>
+		 		
+			 	<div class="tab-pane fade" id="other">
+			 		
+			 	</div>
+		 	</div>
+	     </div>
+	</div>
+</div>
+
+}

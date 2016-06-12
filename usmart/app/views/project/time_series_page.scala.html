@@ -1,0 +1,104 @@
+@(userProvider: services.UserProvider)(project: Project)(mode: String)(meter : models.Meter = null)
+
+@import views.html.commons._ 
+@import views.html.helper._
+@main(userProvider,"Meter Page"){
+<div class="container">
+
+      <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <a href="@routes.ProjectController.showProject(project.id, 0)"><h2>@project.title</h2></a>
+          <div id="jumbotron_hc" class="jumbotron">
+          
+			<div id="daily_series_container" style="min-width: 800px; max-width: 1000px; height: 600px; margin: 0 auto"></div>
+
+          </div>
+          <div class="row">
+            <div id="time_series_table_div" class="col-xs-6 col-lg-3">
+              <h3>DayType Control</h3>
+              <table id="daytypecheckboxlist" class="table table-striped table-bordered">
+              	<thead>
+       				<tr>
+	       				<th></th>
+						<th>Day Type</th>
+   					</tr>
+    			</thead>
+    			<tbody>
+    			@for(typeDay <- meter.dayTypeList){
+    				<tr>
+    					<td><div>
+    						<input class="dayType-chk" id="@typeDay.dayType-checkbox" type="checkbox" 
+	    						name="@typeDay.dayType" 
+	    						value="@typeDay.dayType"
+	    						onclick=activateDayType(this.name,this.id) @if(typeDay.isSelected){checked}>
+	    					</div>
+	    				</td>
+    					<td>@typeDay.dayType</td>
+    				</tr>
+    			}
+    			</tbody>
+              </table>
+            </div><!--/.col-xs-6.col-lg-4-->
+            
+          </div><!--/row-->
+        </div><!--/.col-xs-12.col-sm-9-->
+
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+          <div class="list-group">
+            <a href="@routes.ProjectController.showMeterPage(meter.id)" class="list-group-item">Heat Map</a>
+            <a href="@routes.TimeSeriesController.showTimeSeriesPage(meter.id)" class="list-group-item active">Time Series</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+          </div>
+        </div><!--/.sidebar-offcanvas-->
+	</div><!--/row-->
+</div><!--/.container-->
+
+<div>
+
+</div>
+
+
+@*All the meter information is located here*@
+<pre id="meterId" style="display: none">@meter.id</pre>
+<pre id="startYear" style="display: none">@meter.startYear</pre>
+<pre id="startMonth" style="display: none">@meter.startMonth</pre>
+<pre id="startDay" style="display: none">@meter.startDay</pre>
+<pre id="endYear" style="display: none">@meter.endYear</pre>
+<pre id="endMonth" style="display: none">@meter.endMonth</pre>
+<pre id="endDay" style="display: none">@meter.endDay</pre>
+<pre id="maxKWh" style="display: none">@meter.maxKWh</pre>
+<pre id="minKWh" style="display: none">@meter.minKWh</pre>
+<pre id="heatmap-data" style="display: none">Date,Time,Temperature
+@*
+@if(meter == null){
+	<h1>                 No meter passed</h1>
+}else{@for(dataList <- meter.dataList){@dataList.getDateString,@dataList.getTime,@dataList.getKWh
+}
+}
+*@
+</pre>
+}
+
+<pre id="csv" style="display: none"></pre>
+@*
+@for(dailyData <- meter.dailyDataList){@dailyData.csvString}*@
+  
+<script typer="text/javascript" charset="utf-8">
+var meterId = document.getElementById("meterId").innerHTML;
+window.onload = showDailyTimeSeries(meterId);
+	
+	alert(meterId);
+
+</script>
+

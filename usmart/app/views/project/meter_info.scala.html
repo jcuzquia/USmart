@@ -1,0 +1,37 @@
+@(userProvider : services.UserProvider)(nav : String)(meterForm : Form[_])(project: models.Project)
+@import views.html.commons._
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-8") }
+@shortFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-4") }
+@main(userProvider, nav){
+<div class="container">
+  <div class="page-header">
+		<h1>Meter Information</h1>
+  </div>
+  <fieldset>
+	@b3.form(action = routes.ProjectController.getMeterData("kWh", project.id), 'enctype -> "multipart/form-data") {
+		@b3.text(meterForm("meterName"), 
+			'_label -> "meter",
+			'value -> "Meter X"
+		)(shortFC, implicitly[Messages])
+		
+	@b3.text(meterForm("description"), 
+			'_label -> "Description",
+			'value -> "Meter X description"
+		)(shortFC, implicitly[Messages])
+	
+	@b3.file(meterForm("meter_data"), '_label -> "file")
+       <div class="form-group">
+        <div class="col-md-4">
+          <input type="submit" class="btn btn-success" value="Submit"/>
+          <button type="button" class="btn btn-warning"
+                   value="cancel">Cancel</button>
+        </div>
+      </div>
+      
+	
+      
+	}
+  </fieldset>
+  
+  </div>	
+}

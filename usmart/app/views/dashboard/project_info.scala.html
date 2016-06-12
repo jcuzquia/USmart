@@ -1,0 +1,41 @@
+@(projectForm : Form[_])(userProvider : services.UserProvider)(nav : String)
+@import views.html.commons._
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-8") }
+@shortFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-4") }
+
+@main(userProvider, nav){
+<div class="container">
+  <div class="page-header">
+		<h1>Project Information</h1>
+  </div>
+
+  <fieldset>
+  	<legend>User Information</legend>
+	@b3.form(action = routes.ProjectController.saveProject()) {
+		@b3.text(projectForm("title"), 
+			'_label -> "Title",
+			'value -> "Project X"
+		)(shortFC, implicitly[Messages])
+		
+	@b3.text(projectForm("description"), 
+			'_label -> "Description",
+			'value -> "Project X description"
+		)(shortFC, implicitly[Messages])
+		
+        
+       <div class="form-group">
+        <div class="col-md-4">
+          <input type="submit" class="btn btn-success" value="Submit"/>
+          <button type="button" class="btn btn-warning"
+                   value="cancel">Cancel</button>
+        </div>
+      </div>
+	}
+  </fieldset>
+  <div class="col-xs-6 col-md-4">
+  	@*Display list of available providers
+  	@_providerPartial(skipCurrent=false)*@
+  </div>
+  
+  </div>	
+}

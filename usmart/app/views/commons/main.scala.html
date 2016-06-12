@@ -1,0 +1,49 @@
+@(userProvider: services.UserProvider, title: String, nav: String = "")(content: Html)
+
+@import be.objectify.deadbolt.java.views.html._
+@import be.objectify.deadbolt.java.utils.TemplateUtils._
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+		@head_section(title)       
+    </head>
+    <body>
+   
+    	@nav_bar(nav, userProvider)
+    	
+    	
+    	@if(flash.contains(HomeController.FLASH_ERROR_KEY)) {
+    		<div class="alert alert-danger" role="alert">
+    			<button type="button" class="close" data-dismiss="alert">
+    				<span aria-hidden="false"> 
+    					&times;
+    				</span>
+    				<span class="sr-only">
+    					Close
+    				</span>
+    			</button>
+    		</div>
+    	}
+    	
+    	@if(flash.contains(HomeController.FLASH_MESSAGE_KEY)) {
+                <div class="alert alert-success" role="alert">
+                    <button type="button" class="close" data-dismiss="alert">
+                    	<span aria-hidden="false">&times;</span>
+                    	<span class="sr-only">
+                        	Close
+                        </span>
+                    </button>
+                    @flash().get(HomeController.FLASH_MESSAGE_KEY)
+                </div>
+            }
+    	
+        @content
+        
+    </body>
+    
+@foot_section()
+   
+    
+</html>

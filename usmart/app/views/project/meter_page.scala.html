@@ -1,0 +1,98 @@
+@(userProvider: services.UserProvider)(project: models.Project)(mode: String)(meter: models.Meter)
+
+@import views.html.commons._ 
+@import views.html.helper._
+
+@main(userProvider,"Meter Page"){
+<div class="container">
+
+      <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <a href="@routes.ProjectController.showProject(project.id, 0)"><h2>@project.title</h2></a>
+          <div id="jumbotron_hc" class="jumbotron">
+          
+			<div id="heatmap_container" style="min-width: 800px; max-width: 1000px; height: 400px; margin: 0 auto"></div>
+
+          </div>
+          <div class="row">
+            <div class="col-xs-6 col-lg-4">
+              <h2>Heading</h2>
+              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            </div><!--/.col-xs-6.col-lg-4-->
+            <div class="col-xs-6 col-lg-4">
+              <h2>Heading</h2>
+              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            </div><!--/.col-xs-6.col-lg-4-->
+            <div class="col-xs-6 col-lg-4">
+              <h2>Heading</h2>
+              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            </div><!--/.col-xs-6.col-lg-4-->
+            <div class="col-xs-6 col-lg-4">
+              <h2>Heading</h2>
+              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            </div><!--/.col-xs-6.col-lg-4-->
+            <div class="col-xs-6 col-lg-4">
+              <h2>Heading</h2>
+              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            </div><!--/.col-xs-6.col-lg-4-->
+            <div class="col-xs-6 col-lg-4">
+              <h2>Heading</h2>
+              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            </div><!--/.col-xs-6.col-lg-4-->
+          </div><!--/row-->
+        </div><!--/.col-xs-12.col-sm-9-->
+
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+          <div class="list-group">
+            <a href="@routes.ProjectController.showMeterPage(meter.id)" class="list-group-item active">Heat Map</a>
+            <a href="@routes.TimeSeriesController.showTimeSeriesPage(meter.id)" class="list-group-item">Time Series</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+          </div>
+        </div><!--/.sidebar-offcanvas-->
+	</div><!--/row-->
+</div><!--/.container-->
+
+@*All the meter information is located here*@
+<pre id="startYear" style="display: none">@meter.startYear</pre>
+<pre id="startMonth" style="display: none">@meter.startMonth</pre>
+<pre id="startDay" style="display: none">@meter.startDay</pre>
+<pre id="endYear" style="display: none">@meter.endYear</pre>
+<pre id="endMonth" style="display: none">@meter.endMonth</pre>
+<pre id="endDay" style="display: none">@meter.endDay</pre>
+<pre id="maxKWh" style="display: none">@meter.maxKWh</pre>
+<pre id="minKWh" style="display: none">@meter.minKWh</pre>
+<pre id="heatmap-data" style="display: none">Date,Time,Temperature
+@if(meter == null){
+	<h1>                 No meter passed</h1>
+}else{@for(dataList <- meter.dataList){@dataList.getDateString,@dataList.getTime,@dataList.getKWh
+}
+}
+
+</pre>
+}
+@*
+<pre>@for(dailyData <- meter.dailyDataList){
+		@dailyData.getDateValue
+}</pre>
+*@
+
+
+
+

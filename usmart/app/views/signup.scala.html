@@ -1,0 +1,67 @@
+@(playAuth: com.feth.play.module.pa.PlayAuthenticate, userProvider: services.UserProvider, signupForm: Form[_])
+
+@import helper._
+@import views.html.commons._
+@import views.html.account._
+
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-8") }
+@shortFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-4") }
+
+@main(userProvider,Messages("playauthenticate.signup.title")){
+
+	<div class="container">
+  <div class="page-header">
+		<h1>Account Information</h1>
+  </div>
+
+  <fieldset>
+  	<legend>User Information</legend>
+	@b3.form(action = routes.HomeController.doSignup()) {
+		@b3.text(signupForm("name"), 
+			'_label -> "Name",
+			'value -> "Camilo"
+		)(shortFC, implicitly[Messages])
+		
+		@b3.text(signupForm("phone"),
+        '_label -> "Phone",
+        'maxlength -> 20,
+        'placeholder -> "(XXX) XXX-XXXX",
+        'help -> "i.e. (123) 456-7890",
+        'value -> "(937) 607-3549"
+      )(shortFC, implicitly[Messages])
+      
+      @b3.text(signupForm("email"),
+        '_label -> "Email",
+        'maxlength -> 50,
+        'placeholder -> "Email",
+        'value -> "jcuzquia@gmail.com"
+        )
+        
+        @b3.password(signupForm("password"), 
+        	'_label -> "Password",
+        	'placeholder -> "Password")
+        
+        
+        @b3.password(signupForm("repeatPassword"), 
+        	'_label -> "Repeat Password",
+        	'placeholder -> "Repeat Password")
+        
+        
+        
+        
+       <div class="form-group">
+        <div class="col-md-4">
+          <input type="submit" class="btn btn-success" value="Submit"/>
+          <button type="button" class="btn btn-warning"
+                   value="cancel">Cancel</button>
+        </div>
+      </div>
+	}
+  </fieldset>
+  <div class="col-xs-6 col-md-4">
+  	@*Display list of available providers
+  	@_providerPartial(playAuth,skipCurrent=false)*@
+  </div>
+  
+  </div>
+}
