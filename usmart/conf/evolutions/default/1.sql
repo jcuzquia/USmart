@@ -3,26 +3,6 @@
 
 # --- !Ups
 
-create table data (
-  id                            bigint not null,
-  k_wh                          float,
-  cost                          float,
-  k_w                           float,
-  genk_w                        float,
-  genk_wh                       float,
-  k_varh                        float,
-  k_var                         float,
-  julian_day                    smallint,
-  is_start_day                  boolean,
-  is_end_day                    boolean,
-  date                          timestamp,
-  date_value                    bigint,
-  day_type                      varchar(255),
-  meter_id                      bigint,
-  constraint pk_data primary key (id)
-);
-create sequence data_seq;
-
 create table daytype (
   id                            bigint not null,
   day_type                      varchar(255),
@@ -44,6 +24,7 @@ create sequence linked_account_seq;
 create table meter (
   id                            bigint not null,
   project_id                    bigint,
+  path                          varchar(255),
   meter_name                    varchar(255),
   description                   varchar(255),
   max_kwh                       double,
@@ -71,6 +52,7 @@ create table project (
   user_id                       bigint not null,
   title                         varchar(255),
   description                   varchar(255),
+  project_path                  varchar(255),
   constraint pk_project primary key (id)
 );
 create sequence project_seq;
@@ -103,6 +85,7 @@ create sequence token_action_seq;
 
 create table users (
   id                            bigint not null,
+  user_directory                varchar(255),
   email                         varchar(255),
   name                          varchar(255),
   first_name                    varchar(255),
@@ -132,9 +115,6 @@ create table user_permission (
   constraint pk_user_permission primary key (id)
 );
 create sequence user_permission_seq;
-
-alter table data add constraint fk_data_meter_id foreign key (meter_id) references meter (id) on delete restrict on update restrict;
-create index ix_data_meter_id on data (meter_id);
 
 alter table daytype add constraint fk_daytype_meter_id foreign key (meter_id) references meter (id) on delete restrict on update restrict;
 create index ix_daytype_meter_id on daytype (meter_id);
@@ -172,9 +152,6 @@ create index ix_users_user_permission_user_permission on users_user_permission (
 
 # --- !Downs
 
-alter table data drop constraint if exists fk_data_meter_id;
-drop index if exists ix_data_meter_id;
-
 alter table daytype drop constraint if exists fk_daytype_meter_id;
 drop index if exists ix_daytype_meter_id;
 
@@ -207,9 +184,6 @@ drop index if exists ix_users_user_permission_users;
 
 alter table users_user_permission drop constraint if exists fk_users_user_permission_user_permission;
 drop index if exists ix_users_user_permission_user_permission;
-
-drop table if exists data;
-drop sequence if exists data_seq;
 
 drop table if exists daytype;
 drop sequence if exists DayType_seq;

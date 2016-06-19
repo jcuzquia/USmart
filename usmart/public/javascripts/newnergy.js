@@ -62,11 +62,11 @@ function activateDayType(dayType, checkboxId){
 	
 }
 
-function showDailyTimeSeries(meterId) {
+function showDailyTimeSeries(meterId){
 	//alert(meterId);
 	var r = jsTimeSeriesRoutes.controllers.TimeSeriesController.getTimeSeriesJson(meterId);
 	$.ajax({
-		url: r,
+		url: r.url,
 		dataType: 'json',
 		success: function(data) {
 			$("#csv").html(data);
@@ -74,6 +74,24 @@ function showDailyTimeSeries(meterId) {
 		}, 
 		error: function(){
 			alert("error in time series chart");
+		}
+	});
+}
+
+
+
+function loadHeatMapJsonData(meterId){
+	var id = meterId.toString();
+	
+	var r = jsProjectRoutes.controllers.ProjectController.getHeatMapJson(id);
+	$.ajax({
+		url: r.url,
+		dataType: 'json',
+		success: function(data) {
+			alert(data);
+		}, 
+		error: function(){
+			alert("error in loading Heat map");
 		}
 	});
 }

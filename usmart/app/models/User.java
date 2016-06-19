@@ -10,12 +10,16 @@ import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
 import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.NameIdentity;
+import com.typesafe.config.Config;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import models.TokenAction.Type;
+import play.Play;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
+
+import java.io.File;
 import java.util.*;
 
 
@@ -29,6 +33,8 @@ public class User extends AppModel implements Subject {
 
 	@Id
 	public Long id;
+	
+	public String userDirectory;
 
 	@Constraints.Email
 	// if you make this unique, keep in mind that users *must* merge/link their
@@ -172,9 +178,27 @@ public class User extends AppModel implements Subject {
 		}
 
 		user.save();
+		user.createFileDirectory();
 		// Ebean.saveManyToManyAssociations(user, "roles");
 		// Ebean.saveManyToManyAssociations(user, "permissions");
 		return user;
+	}
+	
+	/**
+	 * Method that is called right after the user is created
+	 */
+	private void createFileDirectory(){
+		@SuppressWarnings("deprecation")
+		String path = Play.application().path().getAbsolutePath();
+		path = path + "\\" + name;
+		File file = new File(path);
+		if (!file.exists()){
+			System.out.println("Directory was created for: " + name);
+			file.mkdir();
+		} else {
+			System.out.println("File exists!!!");
+		}
+		System.out.println(path);
 	}
 
 	public static void merge(final AuthUser oldUser, final AuthUser newUser) {

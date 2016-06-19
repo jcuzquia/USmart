@@ -15,7 +15,7 @@
           <a href="@routes.ProjectController.showProject(project.id, 0)"><h2>@project.title</h2></a>
           <div id="jumbotron_hc" class="jumbotron">
           
-			<div id="heatmap_container" style="min-width: 800px; max-width: 1000px; height: 400px; margin: 0 auto"></div>
+			<div id="heatmap-container" style="min-width: 800px; max-width: 1000px; height: 400px; margin: 0 auto"></div>
 
           </div>
           <div class="row">
@@ -70,6 +70,7 @@
 </div><!--/.container-->
 
 @*All the meter information is located here*@
+<pre id="meterId" style="display: none">@meter.id</pre>
 <pre id="startYear" style="display: none">@meter.startYear</pre>
 <pre id="startMonth" style="display: none">@meter.startMonth</pre>
 <pre id="startDay" style="display: none">@meter.startDay</pre>
@@ -78,21 +79,22 @@
 <pre id="endDay" style="display: none">@meter.endDay</pre>
 <pre id="maxKWh" style="display: none">@meter.maxKWh</pre>
 <pre id="minKWh" style="display: none">@meter.minKWh</pre>
+
 <pre id="heatmap-data" style="display: none">Date,Time,Temperature
+
 @if(meter == null){
 	<h1>                 No meter passed</h1>
-}else{@for(dataList <- meter.dataList){@dataList.getDateString,@dataList.getTime,@dataList.getKWh
+}else{@for(dataList <- meter.dataContainer.getDataList){@dataList.getDateString,@dataList.getTime,@dataList.getKWh
 }
 }
 
 </pre>
+
+
 }
+
 @*
 <pre>@for(dailyData <- meter.dailyDataList){
 		@dailyData.getDateValue
 }</pre>
 *@
-
-
-
-

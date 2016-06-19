@@ -1,6 +1,8 @@
 package controllers;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +13,17 @@ import com.feth.play.module.pa.PlayAuthenticate;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import constants.Const;
-import controllers.Account.Accept;
 import models.Data;
+import models.DataContainer;
 import models.Meter;
 import models.MeterForm;
 import models.Project;
 import models.ProjectForm;
 import models.User;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
@@ -41,11 +45,13 @@ import views.html.project.meter_info;
  */
 public class ProjectController extends Controller {
 
+	@SuppressWarnings("unused")
 	private final PlayAuthenticate auth;
 	private final UserProvider userProvider;
+	@SuppressWarnings("unused")
 	private final MyUsernamePasswordAuthProvider myUsrPaswProvider;
 	
-	
+	private final FormFactory formFactory;
 	private final Form<ProjectForm> PROJECT_FORM ;
 	private final Form<MeterForm> METER_FORM;
 	
@@ -55,7 +61,7 @@ public class ProjectController extends Controller {
 		this.auth = auth;
 		this.userProvider = userProvider;
 		this.myUsrPaswProvider = myUsrPaswProvider;
-		
+		this.formFactory = formFactory;
 		this.PROJECT_FORM = formFactory.form(ProjectForm.class);
 		this.METER_FORM = formFactory.form(MeterForm.class);
 	}
@@ -80,8 +86,6 @@ public class ProjectController extends Controller {
 	public Result showProject(Long projectId, Long meterId){
 		String key = Const.PROJECT_PAGE;
 		Project project = Project.findById(projectId);
-		Meter meter = Meter.findById(meterId);
-		
 		
 		if(project != null){
 			Html projectPage = HtmlFactory.getProjectPage(userProvider, project, key);
@@ -100,15 +104,11 @@ public class ProjectController extends Controller {
 	@Restrict(@Group(HomeController.USER_ROLE))
 	public Result showMeterPage(Long meterId){
 		String key = Const.METER_PAGE;
-		Meter meter = Meter.findById(meterId);
+		Meter meter = Meter.loadMeter(meterId);
 		Project project = meter.project;
-		if(meter != null){ //never suppossed to be 0
-			Html heatMapPage = HtmlFactory.getMeterPage(userProvider, project, meter, key);
-			
-			return ok(heatMapPage);
-		} else {
-			return badRequest();
-		}
+		Html heatMapPage = HtmlFactory.getMeterPage(userProvider, project, meter, key);
+		
+		return ok(heatMapPage);
 	}
 	
 	
@@ -119,7 +119,6 @@ public class ProjectController extends Controller {
 	 */
 	@Restrict(@Group(HomeController.USER_ROLE))
 	public Result addProject(){
-		final User localUser = userProvider.getUser(session());
 		return ok(project_info.render(PROJECT_FORM, userProvider, ""));
 	}
 	
@@ -129,7 +128,7 @@ public class ProjectController extends Controller {
 	 */
 	@Restrict(@Group(HomeController.USER_ROLE))
 	public Result saveProject(){
-		Form<ProjectForm> projectForm = Form.form(ProjectForm.class).bindFromRequest();
+		Form<ProjectForm> projectForm = formFactory.form(ProjectForm.class).bindFromRequest();
 		final User localUser = userProvider.getUser(session());
 		
 		if(projectForm.hasErrors()){
@@ -142,7 +141,9 @@ public class ProjectController extends Controller {
 		
 		if(project != null){
 			localUser.projects.add(project);
+			
 			localUser.save();
+			project.createFileDirectory(localUser, project.id);
 			return redirect(routes.HomeController.dashboard());
 		}
 		return badRequest(project_info.render(PROJECT_FORM, userProvider, ""));
@@ -171,8 +172,9 @@ public class ProjectController extends Controller {
 	public Result getMeterData(String mode, Long projectId) {
 		
 		//working with the form
-		Form<Meter> meterForm = Form.form(Meter.class).bindFromRequest();
+		Form<Meter> meterForm = formFactory.form(Meter.class).bindFromRequest();
 		if(meterForm.hasErrors()){
+			Logger.error("submission of meter Form has error");
 			flash("Error", "The meter form has errors");
 			return badRequest("Meter Form has errors");
 		}
@@ -189,12 +191,16 @@ public class ProjectController extends Controller {
 			
 			File file = filePart.getFile();
 			dataList = MeterFileReader.getDataListFromFile(file);
+			final DataContainer dataContainer = new DataContainer(dataList);
 			//if data list is not empty then create a meter instance
 			if(!dataList.isEmpty()){
-				meter.setDataList(dataList);
+				meter.setDataList(dataContainer);
 				project.addMeter(meter);
 				project.update();
-				meter.save();
+				final String meterPath = project.projectPath + "\\" + meter.id + Const.FILE_EXTENTION;
+				meter.setPath(meterPath);
+				project.update();
+				serializeMeterData(meter, meter.path);
 			}
 			flash("Message", "Upload Successful");
 			return redirect(routes.ProjectController.showProject(project.id, meter.id));
@@ -205,6 +211,27 @@ public class ProjectController extends Controller {
 		}
 		
 	}
+	
+	/**
+	 * We are Serializing the data container of the meter
+	 * @param meter
+	 * @param project folder path
+	 */
+	public void serializeMeterData(Meter meter, String meterPath){
+		   
+		   try{
+			   
+			FileOutputStream fout = new FileOutputStream(meterPath);
+			ObjectOutputStream oos = new ObjectOutputStream(fout);   
+			oos.writeObject(meter.getDataContainer());
+			oos.close();
+			System.out.println("Done");
+			   
+		   }catch(Exception ex){
+			   ex.printStackTrace();
+		   }
+	   }
+	
 	
 	public Result addMeter(Long projectId){
 		Project project = Project.findById(projectId);
@@ -218,12 +245,25 @@ public class ProjectController extends Controller {
 	 * @param meterId
 	 * @return
 	 */
-	@SuppressWarnings("unused")
-	public Result retrieveHeatmapData(Long meterId){
-		Meter meter = Meter.findById(meterId);
-		Long projectId = meter.project.id;
+	public Result getHeatMapJson(String meterId){
 		
-		return redirect(routes.ProjectController.showProject(projectId, meterId));
+		Meter meter = Meter.loadMeter(Long.parseLong(meterId));
+		Logger.info("Calling the GetheatMap Json and Loading the meter...");
+		List<String> heatmapData = new ArrayList<String>();
+		if (meter == null){
+			flash ("Error", "Unable to find the meter " + meterId);
+			Logger.error("Were not able to find the meter " + meterId + " in getHeatMapJson at ProjectController");
+			redirect(routes.HomeController.dashboard());
+		} else {
+			
+			flash ("Message", "Showing meter " + meterId);
+			heatmapData = new ArrayList<>(meter.getHeatMapData());
+			if(heatmapData.isEmpty()){
+				Logger.error("The data was not able to load at ProjectController.getHeatMapJson()");
+			}
+		}
+		
+		return ok(Json.toJson(heatmapData.size()));
 	}
 	
 	/**
@@ -245,11 +285,12 @@ public class ProjectController extends Controller {
 	 * @return
 	 */
 	public Result jsProjectRoutes() {
+//		System.out.println("Calling jsProjectRoutes");
 		return ok(
 				JavaScriptReverseRouter.create("jsProjectRoutes", 
-						routes.javascript.ProjectController.getMeterData()
+						routes.javascript.ProjectController.getHeatMapJson()
 						)
-				);
+				).as("text/javascript");
 	}
 	
 }

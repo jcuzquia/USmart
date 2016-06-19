@@ -50,7 +50,6 @@ public class HtmlFactory {
 	public static Html getMeterPage(UserProvider userProvider, Project project, Meter meter, String key){
 		
 		Html page = meter_page.render(userProvider, project, Const.MY_METERS, meter);
-		System.out.println("After entire page");
 		return page;
 	}
 	

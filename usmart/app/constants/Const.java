@@ -25,6 +25,7 @@ public class Const {
 	public static final String TIME_SERIES = "Time Series";
 	public static final String METER_PAGE = "Meter Page";
 	public static final String MY_METERS = "My Meters"; //title My meters passed to the projectPage
+	public static final String FILE_EXTENTION = ".art";
 	
 	// daytypesused for the daily time series
 	public static final String WEEKEND = "Weekend";
@@ -79,7 +80,6 @@ public class Const {
 	 * the appropriate list for each state
 	 */
 	public static final LinkedHashMap<String, String> STATE_MAP;
-
 
 	static {
 	    STATE_MAP = new LinkedHashMap<>();

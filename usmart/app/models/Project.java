@@ -1,5 +1,6 @@
 package models;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import play.Play;
 import play.data.validation.Constraints;
 
 import com.avaje.ebean.Model;
@@ -35,6 +39,9 @@ public class Project extends Model {
 	@Constraints.MaxLength(value = 50, message = "length.message")
 	@Constraints.MinLength(value = 3, message = "length.message")
 	public String description;
+	
+	@OneToOne
+	public String projectPath;
 	
 	private static Model.Finder<String, Project> find = new Model.Finder<String, Project>(Project.class);
 	
@@ -75,7 +82,26 @@ public class Project extends Model {
 		meters.add(meter);
 	}
 	
-	
-	
+	/**
+	 * Method that is called right after the project is created from the controller
+	 */
+	public void createFileDirectory(User user, Long id){
+		this.projectPath = Play.application().path().getAbsolutePath();
+		String name = user.name;
+		projectPath = projectPath + "\\" + name + "\\" + id;
+		File file = new File(projectPath);
+		if (!file.exists()){
+			System.out.println("Directory was created for: " + name);
+			file.mkdir();
+			update();
+		} else {
+			System.out.println("File exists!!!");
+		}
+		System.out.println(projectPath);
+	}
+
+
+
+
 }
 

@@ -1,4 +1,5 @@
 package models;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
 
 import constants.Const;
 import javafx.beans.property.StringProperty;
@@ -19,10 +21,8 @@ import javafx.beans.property.StringProperty;
  * @author Jose Camilo Uzquiano
  *
  */
-@Entity
-public class Data extends Model implements Comparable<Data>{
+public class Data implements Comparable<Data>, Serializable{
 
-	@Id
 	public Long id;
 	private float kWh, cost, kW, genkW, genkWh, kVarh, kVar;
 	private short julianDay;
@@ -32,7 +32,6 @@ public class Data extends Model implements Comparable<Data>{
 	private StringProperty meterNumber;
 	private String dayType;
 	
-	@ManyToOne
 	public Meter meter;
 	
 	public Data(long dateValue) {
@@ -49,7 +48,8 @@ public class Data extends Model implements Comparable<Data>{
 		date = new Date(dateValue);
 	}
 	
-	public Data(){}
+	public Data(){
+	}
 	
 	public float getKWh() {
 		return kWh;

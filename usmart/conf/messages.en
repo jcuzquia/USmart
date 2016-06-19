@@ -1,5 +1,11 @@
 # Override default Play's validation messages
 
+
+
+
+
+
+
 # --- Constraints
 constraint.required=Required
 constraint.min=Minimum value: {0}
