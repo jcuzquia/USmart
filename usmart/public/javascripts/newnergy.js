@@ -31,7 +31,6 @@ function deleteProject(delUrl){
 
 function activateDayType(dayType, checkboxId){
 	var meterId = document.getElementById("meterId").innerHTML
-	alert(meterId);
 	/* look for all checkboes that have a parent id called 'checkboxlist' attached to it and check if it was checked */
 	$("#daytypecheckboxlist input:checked").each(function() {
 		

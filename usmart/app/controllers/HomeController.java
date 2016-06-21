@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,7 @@ import be.objectify.deadbolt.java.actions.Restrict;
 import constants.Const;
 import models.Project;
 import models.User;
+import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -21,13 +23,13 @@ import providers.MyUsernamePasswordAuthProvider;
 import providers.MyUsernamePasswordAuthProvider.MyLogin;
 import providers.MyUsernamePasswordAuthProvider.MySignup;
 import services.UserProvider;
-import views.html.index;
-import views.html.contact;
 import views.html.about;
+import views.html.contact;
+import views.html.dashboard_main;
+import views.html.index;
+import views.html.login;
 import views.html.signup;
 import views.html.dashboard.my_projects;
-import views.html.login;
-import views.html.dashboard_main;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -107,6 +109,7 @@ public class HomeController extends Controller {
 	public Result dashboard(){
 		final User localUser = userProvider.getUser(session());
 		List<Project> projects = Project.findAllByUser(localUser.email);
+		
 		return ok(dashboard_main.render(userProvider, 
 				Const.NAV_DASHBOARD,
 				my_projects.render(projects)

@@ -29,7 +29,6 @@ GET		/project/addMeter				controllers.ProjectController.addMeter(projectId: Long
 POST	/project/uploadMeter/:mode		controllers.ProjectController.getMeterData(mode: String, projectId: Long)
 DELETE	/project/deleteMeter/:id		controllers.ProjectController.deleteMeter(id: Long)
 GET		/project/timeSeries/:meterId	controllers.TimeSeriesController.showTimeSeriesPage(meterId: Long)
-GET		/project/timeSeriesData/:meterId	controllers.TimeSeriesController.getTimeSeriesJson(meterId: String)
 POST	/project/activateDayType/:dayType	controllers.TimeSeriesController.activateDayType(dayType: String, meterId: String)
 
 # Login
@@ -77,6 +76,7 @@ GET     /message                    controllers.AsyncController.message
 # Javascript Routing
 GET		/project/jsheatmap/:meterId			controllers.ProjectController.getHeatMapJson(meterId: String)
 GET		/jsProjectRoutes 			controllers.ProjectController.jsProjectRoutes()
+GET		/jsTimeSeriesRoutes					controllers.TimeSeriesController.jsTimeSeriesRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

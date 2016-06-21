@@ -72,7 +72,7 @@ public class Meter extends Model {
 
 	public DataContainer dataContainer;
 
-	@OneToMany(mappedBy = "meter", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "meter", cascade = CascadeType.ALL)
 	public List<DayType> dayTypeList = new ArrayList<DayType>();
 
 	public static final Finder<Long, Meter> find = new Model.Finder<Long, Meter>(Meter.class);
@@ -95,7 +95,7 @@ public class Meter extends Model {
 	 * @param dataList
 	 * @return
 	 */
-	private void findMeterItems(List<Data> dataList) {
+	public void findMeterItems(List<Data> dataList) {
 
 		double maxKWh = dataList.get(0).getKWh();
 		double minKWh = dataList.get(0).getKWh();
@@ -127,6 +127,8 @@ public class Meter extends Model {
 		this.maxKWh = maxKWh;
 		this.minKWh = minKWh;
 		this.dayTypeList = new ArrayList<>(dayTypeList);
+		Logger.info("Set up maxkWh = " + this.maxKWh + " minkWh = " + this.minKWh + " dayTypeListSize = " + dayTypeList.size());
+		
 	}
 
 	private boolean containsDayType(String dt) {
@@ -158,6 +160,9 @@ public class Meter extends Model {
 		Logger.info("loadMeter() at models.Meter");
 		Meter meter = find.byId(id);
 		meter.dataContainer = loadDataContainer(meter.path);
+		
+		meter.findMeterItems(meter.dataContainer.getDataList());
+		
 		if(meter.path == null) {
 			Logger.error("There is an error loading meter models.Meter.loadMeter(). No path found");
 			return null;
@@ -186,6 +191,7 @@ public class Meter extends Model {
 	        	return null;
 	        } else {
 	        	Logger.info("Returning dataContainer with data size of: " + dataContainer.getDataList().size());
+	        	Logger.info("Returning dataContainer with TimeSeriesData size of: " + dataContainer.getTimeSeriesDataList().size());
 	        	return dataContainer;
 	        }
 	        
@@ -209,44 +215,6 @@ public class Meter extends Model {
 		return dataContainer;
 	}
 
-	public List<TimeSeriesData> getTimeSeriesData() {
-		// get number of intervals between a day
-		int hour = 0;
-		int minute = 0;
-		List<TimeSeriesData> tsdList = new ArrayList<TimeSeriesData>();
-
-		for (int i = 0; i < 96; i++) {
-
-			TimeSeriesData tsd = new TimeSeriesData(hour, minute);
-			List<Data> dataList = new ArrayList<Data>();
-			dataList = searchListWithTime(hour, minute);
-			tsd.setTimeData(dataList);
-			System.out.println("We are adding hour: " + hour + " minute: " + minute);
-			tsdList.add(tsd);
-			if (minute == 0 && hour < 24) {
-				minute += 15;
-			} else if (minute >= 45 && hour < 24) {
-				minute = 0;
-				hour++;
-			} else {
-				minute += 15;
-			}
-		}
-
-		Logger.info("Finished loop with ending result of this size: " + tsdList.size() );
-		return tsdList;
-	}
-
-	private List<Data> searchListWithTime(int hour, int minute) {
-		List<Data> dl = new ArrayList<Data>();
-		for (Data data : dataContainer.getDataList()) {
-			if (data.getDate().getHours() == hour && data.getDate().getMinutes() == minute) {
-				dl.add(data);
-			}
-		}
-
-		return dl;
-	}
 
 	/**
 	 * This is called from the project controller. It is actually the
@@ -274,11 +242,14 @@ public class Meter extends Model {
 		endYear = cal.get(Calendar.YEAR);
 		endMonth = cal.get(Calendar.MONTH);
 		endDay = cal.get(Calendar.DAY_OF_MONTH);
-		System.out.println(dataList.size());
 		findMeterItems(dataList);
 
 	}
 
+	/**
+	 * Method that is called when the heat map is called. 
+	 * @return
+	 */
 	public List<String> getHeatMapData() {
 		List<String> heatMapData = new ArrayList<String>();
 		heatMapData.add(HEATMAP_HEADER);
@@ -302,6 +273,97 @@ public class Meter extends Model {
 	
 	public void setPath(String path){
 		this.path = path;
+	}
+	
+	/**
+	 * This will give the daily data that containes a set of all the values
+	 * during the day
+	 * @param dataList
+	 * @return
+	 */
+	public List<DailyData> getDailyData(List<Data> dataList) {
+		List<DailyData> dayTimeIntervalData = new ArrayList<>();
+		List<Data> deletionDataList = new ArrayList<Data>(dataList);
+
+		Data firstData = deletionDataList.get(0);
+		deletionDataList.remove(0);
+		Data secondData = deletionDataList.get(0);
+		
+		/*
+		 * Loop until the deletion list has no items in it
+		 * This means that the overall transfer is complete
+		 */
+		while (deletionDataList.size() > 0) {
+
+			//create the daily container
+			List<Data> dayTimeData = new ArrayList<Data>();
+			
+			//while they are the same day keep adding to this specific day container
+			while (firstData.getDate().getDate() == secondData.getDate().getDate()) { 
+
+				firstData.setkW(firstData.getKWh() * 4);
+				firstData.setGenkW(firstData.getGenkWh() * 4);
+
+				dayTimeData.add(firstData);
+				firstData = deletionDataList.get(0); // we get the first data
+				deletionDataList.remove(0);
+				secondData = deletionDataList.get(0);
+				if(deletionDataList.size() == 1){
+					break;
+				}
+			}
+			
+			dayTimeData.add(firstData);
+			firstData = deletionDataList.get(0);
+			deletionDataList.remove(0);
+			
+			if(deletionDataList.size() == 0 ){
+				break;
+			}
+			secondData = deletionDataList.get(0);
+			if (dayTimeData.size() != 96) {
+				dayTimeData = fixDayTimeData(dayTimeData);
+			}
+			dayTimeIntervalData.add(new DailyData(dayTimeData, dayTimeData.get(0).getDateValue()));
+		}
+		
+		return dayTimeIntervalData;
+	}
+	
+	@SuppressWarnings("deprecation")
+	/**
+	 * This method returns 96 items per list to build the matrix of the heat map. 
+	 * It checks only for repeated hours and minutes for each specific day, if the daily list
+	 * is not equal to 96 items. This is mostly done for daylight savings
+	 * @param dayTimeData
+	 * @return
+	 */
+	private List<Data> fixDayTimeData(List<Data> dayTimeData) {
+		
+		java.util.Collections.sort(dayTimeData);
+		
+		for (int i = 0; i < dayTimeData.size()-2; i++){
+			Date date1 = new Date(dayTimeData.get(i).getDateValue());
+			
+			int h1 = date1.getHours();
+			int m1 = date1.getMinutes();
+			for(int j = i+1; j < dayTimeData.size()-1; j++){
+				Date date2 = new Date(dayTimeData.get(j).getDateValue());
+				int h2 = date2.getHours();
+				int m2 = date2.getMinutes();
+				
+				if(h1 == h2 && m1 == m2){ //check if the minute and hour are equal for each item
+					dayTimeData.get(i).setKWh(dayTimeData.get(j).getKWh());
+					dayTimeData.get(i).setkW(dayTimeData.get(j).getkW());
+					dayTimeData.get(i).setGenkWh(dayTimeData.get(j).getGenkWh());
+					dayTimeData.get(i).setGenkW(dayTimeData.get(j).getGenkW());
+					dayTimeData.remove(j);
+				}
+				
+			}
+		}
+		
+		return dayTimeData;
 	}
 
 }

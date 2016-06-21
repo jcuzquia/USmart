@@ -3,8 +3,11 @@ package models;
 import be.objectify.deadbolt.java.models.Permission;
 import be.objectify.deadbolt.java.models.Role;
 import be.objectify.deadbolt.java.models.Subject;
+import constants.Const;
+
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.Model;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
@@ -13,6 +16,7 @@ import com.feth.play.module.pa.user.NameIdentity;
 import com.typesafe.config.Config;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import models.TokenAction.Type;
+import play.Logger;
 import play.Play;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
@@ -34,6 +38,7 @@ public class User extends AppModel implements Subject {
 	@Id
 	public Long id;
 	
+	@OneToOne
 	public String userDirectory;
 
 	@Constraints.Email
@@ -68,7 +73,7 @@ public class User extends AppModel implements Subject {
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<Project> projects = new ArrayList<Project>();
 
-	public static final AppModel.Finder<Long, User> find = new AppModel.Finder<Long, User>(User.class);
+	public static final Finder<Long, User> find = new Model.Finder<Long, User>(User.class);
 
 	@Override
 	public String getIdentifier()
@@ -102,6 +107,10 @@ public class User extends AppModel implements Subject {
 		return find.where().eq("active", true)
 				.eq("linkedAccounts.providerUserId", identity.getId())
 				.eq("linkedAccounts.providerKey", identity.getProvider());
+	}
+	
+	public static User findById(Long id){
+		return find.byId(id);
 	}
 
 	public static User findByAuthUserIdentity(final AuthUserIdentity identity) {
@@ -147,7 +156,10 @@ public class User extends AppModel implements Subject {
 		user.lastLogin = new Date();
 		user.linkedAccounts = Collections.singletonList(LinkedAccount
 				.create(authUser));
-
+		// creating the user folder
+		String path = Const.SERVER_PATH + "\\" + user.name + user.id;
+		user.userDirectory = path;
+		
 		if (authUser instanceof EmailIdentity) {
 			final EmailIdentity identity = (EmailIdentity) authUser;
 			// Remember, even when getting them from FB & Co., emails should be
@@ -178,7 +190,6 @@ public class User extends AppModel implements Subject {
 		}
 
 		user.save();
-		user.createFileDirectory();
 		// Ebean.saveManyToManyAssociations(user, "roles");
 		// Ebean.saveManyToManyAssociations(user, "permissions");
 		return user;
@@ -186,19 +197,16 @@ public class User extends AppModel implements Subject {
 	
 	/**
 	 * Method that is called right after the user is created
+	 * Or when we are calling dashboard in HomeController
 	 */
-	private void createFileDirectory(){
-		@SuppressWarnings("deprecation")
-		String path = Play.application().path().getAbsolutePath();
-		path = path + "\\" + name;
-		File file = new File(path);
+	public static void createFileDirectory(String directory){
+		File file = new File(directory);
 		if (!file.exists()){
-			System.out.println("Directory was created for: " + name);
+			Logger.info("directory was created for User at: " + directory);
 			file.mkdir();
 		} else {
-			System.out.println("File exists!!!");
+			Logger.error("Directory "+ directory + " already exist");
 		}
-		System.out.println(path);
 	}
 
 	public static void merge(final AuthUser oldUser, final AuthUser newUser) {

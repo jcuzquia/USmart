@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -157,13 +158,27 @@ public class ProjectController extends Controller {
 	@Restrict(@Group(HomeController.USER_ROLE))
 	public Result deleteProject(Long id){
 		Project project = Project.findById(id);
+		Logger.info("Starting to Delete project ProjectController.deleteProject()");
 		if(project == null) {
+			Logger.error("No project was found to be deletedd");
 			badRequest("Project not found");
+		} else {
+			// check if the project file directory exists
+			File projectFolder = new File(project.projectPath);
+			if(!projectFolder.exists()){
+				Logger.info("During project deletion in ProjectController.deleteProject(), there was no file at: " + project.projectPath);
+			} else {
+				Logger.debug("Need to add folder deletion at ProjectController.deleteProject()");
+			}
 		}
+		
+		
+		
 		project.delete();
 		return redirect(routes.HomeController.dashboard());
 	}
 	
+
 	/**
 	 * Handling the raw meter data upload
 	 * 
@@ -245,6 +260,7 @@ public class ProjectController extends Controller {
 	 * @param meterId
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public Result getHeatMapJson(String meterId){
 		
 		Meter meter = Meter.loadMeter(Long.parseLong(meterId));

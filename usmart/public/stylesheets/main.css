@@ -50,5 +50,10 @@ padding: 5px;
 
 #time_series_table_div {
 	max-height: 400px;
-	overflow: auto
+	overflow: auto;
+}
+
+#days-control-div {
+	max-height: 800px;
+	overflow: auto;
 }

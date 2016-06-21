@@ -23,6 +23,7 @@ import javafx.beans.property.StringProperty;
  */
 public class Data implements Comparable<Data>, Serializable{
 
+	private static final long serialVersionUID = 1L;
 	public Long id;
 	private float kWh, cost, kW, genkW, genkWh, kVarh, kVar;
 	private short julianDay;

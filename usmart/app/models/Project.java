@@ -12,10 +12,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import play.Logger;
 import play.Play;
 import play.data.validation.Constraints;
 
 import com.avaje.ebean.Model;
+
+import constants.Const;
 
 @Entity
 @Table(name = "project")
@@ -85,19 +88,21 @@ public class Project extends Model {
 	/**
 	 * Method that is called right after the project is created from the controller
 	 */
-	public void createFileDirectory(User user, Long id){
-		this.projectPath = Play.application().path().getAbsolutePath();
-		String name = user.name;
-		projectPath = projectPath + "\\" + name + "\\" + id;
-		File file = new File(projectPath);
+	public void createFileDirectory(User user, Long projectId){
+		Project project = findById(projectId);
+		Long userId = user.id;
+		project.projectPath = Const.SERVER_PATH+ "\\" + userId + "\\" + project.id;
+		project.update();
+		Logger.info("Creating a Project folder for user: " + userId + " and project: " + project.id);
+		Logger.info("At: " + project.projectPath);
+		File file = new File(project.projectPath);
 		if (!file.exists()){
-			System.out.println("Directory was created for: " + name);
+			Logger.info("New file directory was created for User " + userId + " and project: " + id );
 			file.mkdir();
-			update();
+			
 		} else {
-			System.out.println("File exists!!!");
+			Logger.info("The Project Folder already exist");
 		}
-		System.out.println(projectPath);
 	}
 
 

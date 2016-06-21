@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 
+import play.Play;
+
 /**
  * List of constants to be used throughout the application
  * @author Jose Camilo Uzquiano
@@ -26,6 +28,7 @@ public class Const {
 	public static final String METER_PAGE = "Meter Page";
 	public static final String MY_METERS = "My Meters"; //title My meters passed to the projectPage
 	public static final String FILE_EXTENTION = ".art";
+	public static final String SERVER_PATH = Play.application().path().getAbsolutePath()+ "\\" + "Private";
 	
 	// daytypesused for the daily time series
 	public static final String WEEKEND = "Weekend";
@@ -48,7 +51,7 @@ public class Const {
 	public static final String NREL_URL_CVS_FILES = "http://rredc.nrel.gov/solar/old_data/nsrdb/1991-2005/tmy3/";
 	
 
-	public static final BufferedImage HEAT_MAP_IMAGE = getHeatMapImage();
+//	public static final BufferedImage HEAT_MAP_IMAGE = getHeatMapImage();
 	
 
 	public enum DayType {
@@ -60,19 +63,19 @@ public class Const {
 		
 	}
 
-	private static BufferedImage getHeatMapImage() {
-		
-		
-		BufferedImage img = null;
-		try{
-			
-			img = ImageIO.read(new File("resources/HeatMap.PNG"));
-		}catch (IOException e){
-			e.printStackTrace();
-			System.out.println("Cannot find file");
-		}
-		return img;
-	}
+//	private static BufferedImage getHeatMapImage() {
+//		
+//		
+//		BufferedImage img = null;
+//		try{
+//			
+//			img = ImageIO.read(new File("resources/HeatMap.PNG"));
+//		}catch (IOException e){
+//			e.printStackTrace();
+//			System.out.println("Cannot find file");
+//		}
+//		return img;
+//	}
 	
 	
 	/*

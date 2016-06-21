@@ -7,7 +7,7 @@ function loadChart(){
 	    	
 	    	
 	    	data: {
-	            csv: document.getElementById('csv').innerHTML,
+	            csv: document.getElementById('time-series-csv').innerHTML,
 	            y: "Weekend",
 	    		color: 'green',
 	            //parsed: function () {

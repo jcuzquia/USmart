@@ -4,9 +4,11 @@ import javax.inject.Inject;
 
 import com.feth.play.module.pa.PlayAuthenticate;
 
+import constants.Const;
 import models.TokenAction;
 import models.TokenAction.Type;
 import models.User;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -78,6 +80,12 @@ public class Signup extends Controller {
 		User.verify(ta.targetUser);
 		flash(HomeController.FLASH_MESSAGE_KEY,
 				this.msg.preferred(request()).at("playauthenticate.verify_email.success", email));
+		final User user = User.findByEmail(email);
+		final Long userId = user.id;
+		user.userDirectory = Const.SERVER_PATH + "\\" + userId;
+		user.update();
+		Logger.info("Creating a file directory for user: " + userId + " after verification");
+		User.createFileDirectory(user.userDirectory);
 		if (this.userProvider.getUser(session()) != null) {
 			return redirect(routes.HomeController.index());
 		} else {
