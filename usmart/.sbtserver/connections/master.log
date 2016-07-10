@@ -1,0 +1,16 @@
+New log file opened at Sun Jul 10 11:31:46 CDT 2016 by 5480@Uzquianoj1-PC
+Taking next connection to: 53100
+New client attempting to connect on port: 53101-53100
+  Address = /192.168.1.177:53100
+This client on port 53101 has uuid b331fa8d-4e92-4ac2-ad65-ae783b744605 configName play-fork-run humanReadableName Play Fork Run protocolVersion 1 featureTags Vector()
+Connected Clients: play-fork-run-b331fa8d-4e92-4ac2-ad65-ae783b744605
+Taking next connection to: 53100
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 53100
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 53100
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 53100

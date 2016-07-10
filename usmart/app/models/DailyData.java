@@ -1,20 +1,23 @@
 package models;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import constants.Const;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 /**
  * This class gathers compiles all the data that is contained on a daily basis
  *
  * @author Jose Camilo Uzquiano
  */
-public class DailyData {
+public class DailyData implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private double temperature;
 	private List<Data> dailyIntervalList;
 	private Date date;
@@ -22,6 +25,8 @@ public class DailyData {
 	private int dayOfWeek;
 	private String dayType;
 	private float totalDailykWh;
+	// This is what is parsed in the table of the TimeSeries Page
+	private String dateString;
 	
 	
 	/**
@@ -32,7 +37,7 @@ public class DailyData {
 	public DailyData(List<Data> dailyIntervalList, Long dateValue) {
 		this.dailyIntervalList = dailyIntervalList;
 		this.dateValue = dateValue;
-		date = new Date(dateValue);
+		this.date = new Date(dateValue);
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(date);
 		
@@ -43,11 +48,18 @@ public class DailyData {
 			dayType = Const.WORKDAY;
 		}
 		
-		
-		totalDailykWh = getTotalDailyConsumption(this.dailyIntervalList);
+		this.dateString = generateDateString(this.date);
+		this.totalDailykWh = getTotalDailyConsumption(this.dailyIntervalList);
 	}
 	
 	
+	private String generateDateString(Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM d, ''yy");
+		String dateString = formatter.format(date);
+		return dateString;
+	}
+
+
 	/**
 	 * Simple method that adds up the total kWh for each day
 	 * @param dailyIntervalList
@@ -64,7 +76,7 @@ public class DailyData {
 	public List<Data> getDailyIntervalList() {
 		return dailyIntervalList;
 	}
-	public void setDailyIntervalList(ObservableList<Data> dailyIntervalList) {
+	public void setDailyIntervalList(List<Data> dailyIntervalList) {
 		this.dailyIntervalList = dailyIntervalList;
 	}
 	public Date getDate() {
@@ -99,5 +111,15 @@ public class DailyData {
 	}
 	public float getTotalDailykWh() {
 		return totalDailykWh;
+	}
+
+
+	public String getDateString() {
+		return dateString;
+	}
+
+
+	public void setDateString(String dateString) {
+		this.dateString = dateString;
 	}
 }

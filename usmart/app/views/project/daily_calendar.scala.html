@@ -1,0 +1,38 @@
+@(meter : models.Meter)
+<div class="col-xs-1 col-sm-3" id="daily-calendar-div">
+		<div class="row">
+		<h3>DayType Control</h3>
+			<div id="days-control-div" class="col-xs-12 col-sm-12">
+				
+					<table id="daily-calendar-table" class="table table-striped table-bordered">
+						<thead>
+			       			<tr>
+			       				<th></th>
+								<th>Date</th>
+								<th>DayType</th>
+			   				</tr>
+			    		</thead>
+		    		<tbody>
+		    		@for(dailyData <- meter.dataContainer.getDailyDataList){
+		    			<tr>
+		    				<td><input type="checkbox" value=""></td>
+		    				<td id="value-@dailyData.getDateValue">@dailyData.getDateString</td>
+		    				<td>
+		    					<select class="input-large form-control">
+		    					@for(typeDay <- meter.dayTypeList){
+		    						<option value="@typeDay.dayType" @if(typeDay.dayType == dailyData.getDayType){selected}>@typeDay.dayType</option>
+		    					}
+		    					</select>
+		    				</td>
+		    			</tr>
+		    		}
+		    		</tbody>
+				</table>
+			</div>
+			<div id="selected-days-control-div">
+			
+			</div>
+			
+	</div>
+</div>
+

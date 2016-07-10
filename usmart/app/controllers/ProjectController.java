@@ -287,10 +287,12 @@ public class ProjectController extends Controller {
 	 * @param id
 	 * @return
 	 */
-	public Result deleteMeter(Long id){
-		Meter meter = Meter.findById(id);
+	public Result deleteMeter(Long meterId){
+		Meter meter = Meter.findById(meterId);
 		Project project = meter.project;
+		meter.deleteMeterFile();
 		meter.delete();
+		
 		return redirect(routes.ProjectController.showProject(project.id, 0));
 	}
 	

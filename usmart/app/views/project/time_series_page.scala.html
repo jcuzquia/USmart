@@ -1,39 +1,16 @@
-@(userProvider: services.UserProvider)(project: Project)(mode: String)(meter : models.Meter = null)
+@(userProvider: services.UserProvider)(project: Project)(mode: String)(meter : models.Meter = null)(dayTypeForm : Form[_])
 
 @import views.html.commons._ 
 @import views.html.helper._
 @main(userProvider,"Meter Page"){
-	<div class="col-xs-1 col-sm-2">
-		<div id="days-control-div">
-			<h3>DayType Control</h3>
-				<table id="daily-table" class="table table-striped table-bordered">
-					<thead>
-		       			<tr>
-							<th>Date</th>
-							<th>DayType</th>
-		   				</tr>
-		    		</thead>
-	    		<tbody>
-	    		@for(dateString <- meter.dataContainer.getDailyString){
-	    			<tr>
-	    				<td>@dateString</td>
-	    				<td>
-	    					<select class="input-large form-control">
-	    						<option value="WorkDay">WorkDay</option>
-	    						<option value="Weekend">Weekend</option>
-	    					</select>
-	    				</td>
-	    			</tr>
-	    		}
-	    		</tbody>
-			</table>
-		</div>
-	</div>
+	
+@daily_calendar(meter)
+
 <div class="container">
 
       <div class="row row-offcanvas row-offcanvas-right">
 		
-        <div class="col-xs-12 col-sm-9">
+        <div class="col-xs-11 col-sm-9">
           <p class="pull-right visible-xs">
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
           </p>
@@ -44,38 +21,11 @@
 
           </div>
           <div class="row">
-            <div id="time_series_table_div" class="col-xs-6 col-lg-4">
-              <h3>DayType Control</h3>
-              <table id="daytypecheckboxlist" class="table table-striped table-bordered">
-              	<thead>
-       				<tr>
-	       				<th></th>
-						<th>Day Type</th>
-						<th>Action</th>
-   					</tr>
-    			</thead>
-    			<tbody>
-    			@for(typeDay <- meter.dayTypeList){
-    				<tr>
-    					<td><div>
-    						<input class="dayType-chk" id="@typeDay.dayType-checkbox" type="checkbox" 
-	    						name="@typeDay.dayType" 
-	    						value="@typeDay.dayType"
-	    						onclick=activateDayType(this.name,this.id) @if(typeDay.isSelected){checked}>
-	    						
-	    					</div>
-	    				</td>
-    					<td>@typeDay.dayType</td>
-    				</tr>
-    			}
-    			</tbody>
-              </table>
-            </div><!--/.col-xs-6.col-lg-4-->
-            
+            @daytype_control(meter, dayTypeForm)
           </div><!--/row-->
         </div><!--/.col-xs-12.col-sm-9-->
 
-        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+        <div class="col-xs-6 col-sm-2 sidebar-offcanvas" id="sidebar">
           <div class="list-group">
             <a href="@routes.ProjectController.showMeterPage(meter.id)" class="list-group-item">Heat Map</a>
             <a href="@routes.TimeSeriesController.showTimeSeriesPage(meter.id)" class="list-group-item active">Time Series</a>
@@ -96,7 +46,11 @@
 
 </div>
 
+<hr>
 
+      <footer>
+        <p>&copy; 2015 Company, Inc.</p>
+      </footer>
 @*All the meter information is located here*@
 <pre id="meterId" style="display: none">@meter.id</pre>
 <pre id="startYear" style="display: none">@meter.startYear</pre>
@@ -124,3 +78,17 @@ var meterId = document.getElementById("meterId").innerHTML;
 window.onload = loadChart();
 </script>
 
+ <!-- Script that handles the selection of the daily calendar -->
+<script>
+$("#daily-calendar-table tr").click(function(){
+	   $(this).addClass('selected').siblings().removeClass('selected');    
+	   var value=$(this).find('td:nth-child(2)').id;
+	   alert(value);    
+	});
+
+	$('.ok').on('click', function(e){
+	    alert($("#daily-calendar-table tr.selected td:nth-child(2)").id);
+	});
+	
+	
+</script>

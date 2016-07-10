@@ -1,5 +1,6 @@
 package models;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -84,8 +85,33 @@ public class Meter extends Model {
 	 *            project
 	 */
 	public Meter(DataContainer dataContainer, Project project) {
+		
 		this.dataContainer = dataContainer;
 		this.project = project;
+		Logger.info("Calling meter contructor. Size of DayTypeList is: " + this.dayTypeList.size());
+	}
+
+	private List<DayType> initializeDayTypeList(List<DailyData> dailyDataList) {
+		List<DayType> dayTypeList = new ArrayList<>();
+		
+		dayTypeList.add(new DayType(dailyDataList.get(0).getDayType()));
+		for (DailyData dailyData : dailyDataList){
+			String dayType = dailyData.getDayType();
+			if(!containsDayType(dayType, dayTypeList)){
+				dayTypeList.add(new DayType(dayType));
+			}
+		}
+		return dayTypeList;
+		
+	}
+	
+	private boolean containsDayType(String dt, List<DayType> dayTypeList) {
+		for (DayType dT : dayTypeList) {
+			if (dT.dayType.equals(dt)) {
+				return true;
+			}
+		}
+		return false;
 
 	}
 
@@ -99,13 +125,8 @@ public class Meter extends Model {
 
 		double maxKWh = dataList.get(0).getKWh();
 		double minKWh = dataList.get(0).getKWh();
-		DayType dayType = new DayType(dataList.get(0).getDayType());
-		dayTypeList = new ArrayList<DayType>();
-
-		dayTypeList.add(dayType);
 
 		for (int i = 1; i < dataList.size(); i++) {
-			String dt = dataList.get(i).getDayType();
 			if (dataList.get(i).getKWh() > maxKWh) {
 				maxKWh = dataList.get(i).getKWh();
 			}
@@ -113,36 +134,19 @@ public class Meter extends Model {
 				minKWh = dataList.get(i).getKWh();
 			}
 
-			if (dayTypeList.size() > 100) {
-				break;
-			}
-
-			if (!containsDayType(dt)) {
-				dayTypeList.add(new DayType(dt));
-			}
-
-			containsDayType(dt);
 
 		}
 		this.maxKWh = maxKWh;
 		this.minKWh = minKWh;
-		this.dayTypeList = new ArrayList<>(dayTypeList);
-		Logger.info("Set up maxkWh = " + this.maxKWh + " minkWh = " + this.minKWh + " dayTypeListSize = " + dayTypeList.size());
-		
-	}
-
-	private boolean containsDayType(String dt) {
-		for (DayType dT : dayTypeList) {
-			if (dT.dayType.equals(dt)) {
-				return true;
-			}
-		}
-		return false;
+		Logger.info("Set up maxkWh = " + this.maxKWh + " minkWh = " + this.minKWh + " dayTypeListSize = "
+				+ dayTypeList.size());
 
 	}
+
 
 	/**
 	 * Simple method that finds the meter but doesn't load the data
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -150,9 +154,10 @@ public class Meter extends Model {
 		Meter meter = find.byId(id);
 		return meter;
 	}
-	
+
 	/**
 	 * Method that finds the meter and loads it with the data
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -160,50 +165,52 @@ public class Meter extends Model {
 		Logger.info("loadMeter() at models.Meter");
 		Meter meter = find.byId(id);
 		meter.dataContainer = loadDataContainer(meter.path);
-		
+
 		meter.findMeterItems(meter.dataContainer.getDataList());
-		
-		if(meter.path == null) {
+
+		if (meter.path == null) {
 			Logger.error("There is an error loading meter models.Meter.loadMeter(). No path found");
 			return null;
 		}
-		
+
 		return meter;
 	}
 
 	/**
-	 * Getting called from the Project controller when showing meter
-	 * Simply loads the DataContainer object containing all the data for the meter
+	 * Getting called from the Project controller when showing meter Simply
+	 * loads the DataContainer object containing all the data for the meter
+	 * 
 	 * @param path
 	 * @return
 	 */
 	public static DataContainer loadDataContainer(String path) {
 		Logger.info("Loading data containerin models.Meter");
 		DataContainer dataContainer = null;
-		try{
+		try {
 			FileInputStream fileIn = new FileInputStream(path);
-	        ObjectInputStream in = new ObjectInputStream(fileIn);
-	        dataContainer = (DataContainer) in.readObject();
-	        in.close();
-	        fileIn.close();
-	        if(dataContainer.getDataList().isEmpty()){
-	        	Logger.error("The dataList in the container is empty ");
-	        	return null;
-	        } else {
-	        	Logger.info("Returning dataContainer with data size of: " + dataContainer.getDataList().size());
-	        	Logger.info("Returning dataContainer with TimeSeriesData size of: " + dataContainer.getTimeSeriesDataList().size());
-	        	return dataContainer;
-	        }
-	        
-		} catch(IOException i){
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			dataContainer = (DataContainer) in.readObject();
+			in.close();
+			fileIn.close();
+			if (dataContainer.getDataList().isEmpty()) {
+				Logger.error("The dataList in the container is empty ");
+				return null;
+			} else {
+				Logger.info("Returning dataContainer with data size of: " + dataContainer.getDataList().size());
+				Logger.info("Returning dataContainer with TimeSeriesData size of: "
+						+ dataContainer.getTimeSeriesDataList().size());
+				return dataContainer;
+			}
+
+		} catch (IOException i) {
 			i.printStackTrace();
 			return null;
-		} catch(ClassNotFoundException c){
+		} catch (ClassNotFoundException c) {
 			Logger.error("Unable to find the data Container");
 			c.printStackTrace();
 			return null;
 		}
-		 
+
 	}
 
 	@Override
@@ -215,7 +222,6 @@ public class Meter extends Model {
 		return dataContainer;
 	}
 
-
 	/**
 	 * This is called from the project controller. It is actually the
 	 * initializer of the meter object
@@ -226,6 +232,9 @@ public class Meter extends Model {
 		this.dataContainer = dataContainer;
 		List<Data> dataList = dataContainer.getDataList();
 		
+		// initialize the dayTypeList
+		this.dayTypeList = initializeDayTypeList(dataContainer.getDailyDataList());
+
 		// Set start and end date of the meter
 		startDate = dataList.get(0).getDate();
 		endDate = dataList.get(dataList.size() - 1).getDate();
@@ -247,7 +256,8 @@ public class Meter extends Model {
 	}
 
 	/**
-	 * Method that is called when the heat map is called. 
+	 * Method that is called when the heat map is called.
+	 * 
 	 * @return
 	 */
 	public List<String> getHeatMapData() {
@@ -270,100 +280,30 @@ public class Meter extends Model {
 			}
 		}
 	}
-	
-	public void setPath(String path){
+
+	public void setPath(String path) {
 		this.path = path;
 	}
-	
+
+
 	/**
-	 * This will give the daily data that containes a set of all the values
-	 * during the day
-	 * @param dataList
-	 * @return
+	 * Method to delete the meter file
 	 */
-	public List<DailyData> getDailyData(List<Data> dataList) {
-		List<DailyData> dayTimeIntervalData = new ArrayList<>();
-		List<Data> deletionDataList = new ArrayList<Data>(dataList);
+	public void deleteMeterFile() {
+		try {
 
-		Data firstData = deletionDataList.get(0);
-		deletionDataList.remove(0);
-		Data secondData = deletionDataList.get(0);
-		
-		/*
-		 * Loop until the deletion list has no items in it
-		 * This means that the overall transfer is complete
-		 */
-		while (deletionDataList.size() > 0) {
+			File file = new File(path);
 
-			//create the daily container
-			List<Data> dayTimeData = new ArrayList<Data>();
-			
-			//while they are the same day keep adding to this specific day container
-			while (firstData.getDate().getDate() == secondData.getDate().getDate()) { 
-
-				firstData.setkW(firstData.getKWh() * 4);
-				firstData.setGenkW(firstData.getGenkWh() * 4);
-
-				dayTimeData.add(firstData);
-				firstData = deletionDataList.get(0); // we get the first data
-				deletionDataList.remove(0);
-				secondData = deletionDataList.get(0);
-				if(deletionDataList.size() == 1){
-					break;
-				}
+			if (file.delete()) {
+				Logger.info("File deleted: " + path);
+			} else {
+				Logger.error("There was an error deleting the meter file");
 			}
-			
-			dayTimeData.add(firstData);
-			firstData = deletionDataList.get(0);
-			deletionDataList.remove(0);
-			
-			if(deletionDataList.size() == 0 ){
-				break;
-			}
-			secondData = deletionDataList.get(0);
-			if (dayTimeData.size() != 96) {
-				dayTimeData = fixDayTimeData(dayTimeData);
-			}
-			dayTimeIntervalData.add(new DailyData(dayTimeData, dayTimeData.get(0).getDateValue()));
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
 		}
-		
-		return dayTimeIntervalData;
 	}
-	
-	@SuppressWarnings("deprecation")
-	/**
-	 * This method returns 96 items per list to build the matrix of the heat map. 
-	 * It checks only for repeated hours and minutes for each specific day, if the daily list
-	 * is not equal to 96 items. This is mostly done for daylight savings
-	 * @param dayTimeData
-	 * @return
-	 */
-	private List<Data> fixDayTimeData(List<Data> dayTimeData) {
-		
-		java.util.Collections.sort(dayTimeData);
-		
-		for (int i = 0; i < dayTimeData.size()-2; i++){
-			Date date1 = new Date(dayTimeData.get(i).getDateValue());
-			
-			int h1 = date1.getHours();
-			int m1 = date1.getMinutes();
-			for(int j = i+1; j < dayTimeData.size()-1; j++){
-				Date date2 = new Date(dayTimeData.get(j).getDateValue());
-				int h2 = date2.getHours();
-				int m2 = date2.getMinutes();
-				
-				if(h1 == h2 && m1 == m2){ //check if the minute and hour are equal for each item
-					dayTimeData.get(i).setKWh(dayTimeData.get(j).getKWh());
-					dayTimeData.get(i).setkW(dayTimeData.get(j).getkW());
-					dayTimeData.get(i).setGenkWh(dayTimeData.get(j).getGenkWh());
-					dayTimeData.get(i).setGenkW(dayTimeData.get(j).getGenkW());
-					dayTimeData.remove(j);
-				}
-				
-			}
-		}
-		
-		return dayTimeData;
-	}
-
 }

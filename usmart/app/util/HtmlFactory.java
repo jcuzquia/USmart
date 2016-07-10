@@ -1,8 +1,10 @@
 package util;
 
 import constants.Const;
+import models.DayTypeForm;
 import models.Meter;
 import models.Project;
+import play.data.Form;
 import play.twirl.api.Html;
 import services.UserProvider;
 import views.html.project.meter_list;
@@ -53,8 +55,8 @@ public class HtmlFactory {
 		return page;
 	}
 	
-	public static Html getTimeSeriesPage(UserProvider userProvider, Project project, Meter meter, String key){
-		Html meterListPage = time_series_page.render(userProvider, project, key, meter);
+	public static Html getTimeSeriesPage(UserProvider userProvider, Project project, Meter meter, String key, Form<DayTypeForm> dayTypeForm){
+		Html meterListPage = time_series_page.render(userProvider, project, key, meter, dayTypeForm);
 		return meterListPage;
 	}
 	

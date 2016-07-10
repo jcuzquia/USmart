@@ -71,13 +71,16 @@ public class Signup extends Controller {
 	}
 
 	public Result verify(final String token) {
+		Logger.info("Calling the verify method in the Signup Controller");
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		final TokenAction ta = tokenIsValid(token, Type.EMAIL_VERIFICATION);
 		if (ta == null) {
+			Logger.info("The token is null");
 			return badRequest(no_token_or_invalid.render(this.userProvider));
 		}
 		final String email = ta.targetUser.email;
 		User.verify(ta.targetUser);
+		Logger.info("After verifying");
 		flash(HomeController.FLASH_MESSAGE_KEY,
 				this.msg.preferred(request()).at("playauthenticate.verify_email.success", email));
 		final User user = User.findByEmail(email);

@@ -28,6 +28,23 @@ function deleteProject(delUrl){
 	});
 }
 
+/**
+ * Ajax call that handles the deletion of the dayType
+ * @param delUrl
+ */
+function deletedayType(delUrl){
+	$.ajax({
+		url: delUrl,
+		type: 'DELETE',
+		success: function(data){
+			alert(data)
+		},
+		error: function() {
+			alert("Error deleting")
+		}
+	});
+}
+
 
 function activateDayType(dayType, checkboxId){
 	var meterId = document.getElementById("meterId").innerHTML

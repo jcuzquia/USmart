@@ -54,6 +54,30 @@ padding: 5px;
 }
 
 #days-control-div {
-	max-height: 800px;
+	max-height: 400px;
 	overflow: auto;
+}
+
+.footer {
+  position: relative;
+  margin-top: -150px; /* negative value of footer height */
+  height: 150px;
+  clear:both;
+  padding-top:20px;
+  margin-left: 200px;
+}
+
+.container {
+	/*margin-left: 500px;*/
+}
+
+#daily-calendar-div {
+	margin-left: 10px;
+}
+
+.body { padding-bottom: 70px; }
+
+#selected-days-control-div {
+	background-color: blue; 
+	height: 400px; clear: both;"	
 }

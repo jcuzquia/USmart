@@ -30,7 +30,10 @@ POST	/project/uploadMeter/:mode		controllers.ProjectController.getMeterData(mode
 DELETE	/project/deleteMeter/:id		controllers.ProjectController.deleteMeter(id: Long)
 GET		/project/timeSeries/:meterId	controllers.TimeSeriesController.showTimeSeriesPage(meterId: Long)
 POST	/project/activateDayType/:dayType	controllers.TimeSeriesController.activateDayType(dayType: String, meterId: String)
+POST	/project/meter/saveDayType/:meterId	controllers.TimeSeriesController.saveNewDayType(meterId: Long)
 
+# Calendar and DayType
+DELETE	/project/meter/deleteDayType/:meterId	controllers.TimeSeriesController.deleteDayType(meterId: Long, dayTypeId: Long)
 # Login
 GET 	/login						controllers.HomeController.login
 POST	/login						controllers.HomeController.doLogin
