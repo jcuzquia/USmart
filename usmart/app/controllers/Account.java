@@ -65,6 +65,7 @@ public class Account extends Controller {
 			this.repeatPassword = repeatPassword;
 		}
 
+		@SuppressWarnings("deprecation")
 		public String validate() {
 			if (password == null || !password.equals(repeatPassword)) {
 				return Messages

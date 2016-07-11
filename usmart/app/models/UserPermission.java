@@ -11,16 +11,12 @@ import be.objectify.deadbolt.java.models.Permission;
  */
 @Entity
 public class UserPermission extends AppModel implements Permission {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	public Long id;
 
 	public String value;
 
+	@SuppressWarnings("deprecation")
 	public static final AppModel.Finder<Long, UserPermission> find = new AppModel.Finder<Long, UserPermission>(
 			Long.class, UserPermission.class);
 

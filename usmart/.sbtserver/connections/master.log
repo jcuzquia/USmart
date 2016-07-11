@@ -1,19 +1,16 @@
-New log file opened at Sun Jul 10 11:31:46 CDT 2016 by 5480@Uzquianoj1-PC
-Taking next connection to: 53100
-New client attempting to connect on port: 53101-53100
-  Address = /192.168.1.177:53100
-This client on port 53101 has uuid b331fa8d-4e92-4ac2-ad65-ae783b744605 configName play-fork-run humanReadableName Play Fork Run protocolVersion 1 featureTags Vector()
-Connected Clients: play-fork-run-b331fa8d-4e92-4ac2-ad65-ae783b744605
-Taking next connection to: 53100
+New log file opened at Sun Jul 10 12:30:31 CDT 2016 by 4100@Uzquianoj1-PC
+Taking next connection to: 56241
+New client attempting to connect on port: 56242-56241
+  Address = /192.168.1.177:56241
+This client on port 56242 has uuid 502705fc-ba76-4865-8dc8-0ba5ec338b81 configName play-fork-run humanReadableName Play Fork Run protocolVersion 1 featureTags Vector()
+Connected Clients: play-fork-run-502705fc-ba76-4865-8dc8-0ba5ec338b81
+Taking next connection to: 56241
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 53100
+Taking next connection to: 56241
 Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 53100
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 53100
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 53100
+No non-daemon clients connected after 3 min. Shutting down.
+Server socket thread exiting.
+0 clients open, will close them...
+All client sockets have been closed.
+Closing the 4100@Uzquianoj1-PC logs at Sun Jul 10 12:36:31 CDT 2016, goodbye.

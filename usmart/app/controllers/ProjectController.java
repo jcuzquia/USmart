@@ -2,7 +2,6 @@ package controllers;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -260,7 +259,6 @@ public class ProjectController extends Controller {
 	 * @param meterId
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	public Result getHeatMapJson(String meterId){
 		
 		Meter meter = Meter.loadMeter(Long.parseLong(meterId));
